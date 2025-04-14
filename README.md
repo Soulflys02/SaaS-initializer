@@ -1,2 +1,2 @@
 # web-dev-framework
-A base framework with Django as backend and React as frontend
+A base canvas with Django as backend and React as frontend
