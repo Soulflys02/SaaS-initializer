@@ -3,7 +3,6 @@ import { AxiosRequestConfig } from "axios";
 import backend from "../services/backend";
 
 function useAxios<T = any>() {
-  const [data, setData] = useState<T | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -13,7 +12,7 @@ function useAxios<T = any>() {
 
     try {
       const response = await backend(config);
-      setData(response.data);
+      return response.data as T;
     } catch (err: any) {
       setError(err.message || "An error occurred");
     } finally {
@@ -21,7 +20,7 @@ function useAxios<T = any>() {
     }
   };
 
-  return { data, error, loading, fetchData };
+  return { error, loading, fetchData };
 }
 
 export default useAxios;

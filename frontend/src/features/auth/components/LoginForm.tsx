@@ -1,4 +1,5 @@
 import useAxios from "../../../hooks/useAxios";
+import useAuthStore from "../../../stores/useAuthStore";
 
 type JWT = {
   refresh: string;
@@ -6,10 +7,14 @@ type JWT = {
 };
 
 function LoginForm() {
-  const { data, error, loading, fetchData } = useAxios<JWT>();
+  const { error, loading, fetchData } = useAxios<JWT>();
+  const setTokens = useAuthStore((state) => state.setTokens);
+  const accessToken = useAuthStore((state) => state.accessToken);
+  const refreshToken = useAuthStore((state) => state.refreshToken);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
-  function handleSubmit(formData: FormData) {
-    fetchData({
+  async function handleSubmit(formData: FormData) {
+    const tokens = await fetchData({
       method: "POST",
       url: "/auth/token/",
       data: {
@@ -17,6 +22,10 @@ function LoginForm() {
         password: formData.get("password"),
       },
     });
+
+    if (tokens) {
+      setTokens(tokens.access, tokens.refresh); // Update tokens after data is available
+    }
   }
 
   return (
@@ -31,10 +40,10 @@ function LoginForm() {
       ) : (
         <div>
           {error && <p style={{ color: "red" }}>Error: {error}</p>}
-          {data && (
+          {isAuthenticated && (
             <div>
-              <p>access: {data.access}</p>
-              <p>refresh: {data.refresh}</p>
+              <p>access: {accessToken}</p>
+              <p>refresh: {refreshToken}</p>
             </div>
           )}
         </div>
