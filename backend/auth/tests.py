@@ -14,7 +14,7 @@ class AuthTests(TestCase):
     user: User
     client: Client
     
-    token_url: str = reverse("token_obtain_pair")
+    login_url: str = reverse("login")
     refresh_url: str = reverse("token_refresh")
     protected_url: str = reverse("hello_protected")
     scoped_url: str = reverse("hello_scoped")
@@ -27,24 +27,26 @@ class AuthTests(TestCase):
         """
         Test the token route with valid credentials.
         """
-        response: HttpResponse = self.client.post(self.token_url, {"username": self.username, "password": self.password})
+        response: HttpResponse = self.client.post(self.login_url, {"username": self.username, "password": self.password})
         self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(response.cookies.get("refresh_token"))
+        self.assertIsNotNone(response.cookies.get("access_token"))
     
     def test_token_bad_credentials(self):
         """
         Test the token route with invalid credentials.
         """
-        response: HttpResponse = self.client.post(self.token_url, {"username": self.username, "password": "wrong_password"})
+        response: HttpResponse = self.client.post(self.login_url, {"username": self.username, "password": "wrong_password"})
         self.assertEqual(response.status_code, 401)
+        self.assertIsNone(response.cookies.get("refresh_token"))
+        self.assertIsNone(response.cookies.get("access_token"))
     
     def test_authorized_route(self):
         """
         Test the protected route with valid credentials.
         """
-        response: HttpResponse = self.client.post(self.token_url, {"username": self.username, "password": self.password})
+        response: HttpResponse = self.client.post(self.login_url, {"username": self.username, "password": self.password})
         self.assertEqual(response.status_code, 200)
-        token: str = response.json().get("access")
-        self.client.defaults.setdefault("HTTP_AUTHORIZATION", f'Bearer {token}')
         response: HttpResponse = self.client.get(self.protected_url)
         self.assertEqual(response.status_code, 200)
     
@@ -52,7 +54,6 @@ class AuthTests(TestCase):
         """
         Test the protected route with invalid credentials.
         """
-        self.client.defaults.setdefault("HTTP_AUTHORIZATION", 'Bearer wrong_token')
         response: HttpResponse = self.client.get(self.protected_url)
         self.assertEqual(response.status_code, 401)
 
@@ -62,10 +63,8 @@ class AuthTests(TestCase):
         """
         self.user.is_staff = True
         self.user.save()
-        response: HttpResponse = self.client.post(self.token_url, {"username": self.username, "password": self.password})
+        response: HttpResponse = self.client.post(self.login_url, {"username": self.username, "password": self.password})
         self.assertEqual(response.status_code, 200)
-        token: str = response.json().get("access")
-        self.client.defaults.setdefault("HTTP_AUTHORIZATION", f'Bearer {token}')
         response: HttpResponse = self.client.get(self.scoped_url)
         self.assertEqual(response.status_code, 200)
         self.user.is_staff = False
@@ -73,12 +72,10 @@ class AuthTests(TestCase):
 
     def test_unauthorized_scoped_route(self):
         """
-        Test the scoped route with invalid credentials.
+        Test the scoped route with insufficient permissions.
         """
-        response: HttpResponse = self.client.post(self.token_url, {"username": self.username, "password": self.password})
+        response: HttpResponse = self.client.post(self.login_url, {"username": self.username, "password": self.password})
         self.assertEqual(response.status_code, 200)
-        token: str = response.json().get("access")
-        self.client.defaults.setdefault("HTTP_AUTHORIZATION", f'Bearer {token}')
         response: HttpResponse = self.client.get(self.scoped_url)
         self.assertEqual(response.status_code, 403)
 
@@ -88,7 +85,7 @@ class AuthTests(TestCase):
         """
         self.user.is_active = False
         self.user.save()
-        response: HttpResponse = self.client.post(self.token_url, {"username": self.username, "password": self.password})
+        response: HttpResponse = self.client.post(self.login_url, {"username": self.username, "password": self.password})
         self.assertEqual(response.status_code, 401)
 
     def test_expired_access_token(self):
@@ -98,8 +95,8 @@ class AuthTests(TestCase):
         # simulate an expired token
         token: AccessToken = AccessToken()
         token.set_exp(from_time=make_aware(datetime.now() - timedelta(seconds=10)), lifetime=timedelta(seconds=5))
-        
-        self.client.defaults.setdefault("HTTP_AUTHORIZATION", f'Bearer {token}')
+        self.client.cookies["refresh_token"] = token
+
         response: HttpResponse = self.client.get(self.protected_url)
         self.assertEqual(response.status_code, 401)
 
@@ -107,11 +104,10 @@ class AuthTests(TestCase):
         """
         Test the refresh token route with a valid refresh token.
         """
-        response: HttpResponse = self.client.post(self.token_url, {"username": self.username, "password": self.password})
+        response: HttpResponse = self.client.post(self.login_url, {"username": self.username, "password": self.password})
         self.assertEqual(response.status_code, 200)
-        token: str = response.json().get("refresh")
         
-        response: HttpResponse = self.client.post(self.refresh_url, {"refresh": token})
+        response: HttpResponse = self.client.post(self.refresh_url)
         self.assertEqual(response.status_code, 200)
     
     def test_expired_refresh_token(self):
@@ -121,6 +117,7 @@ class AuthTests(TestCase):
         # simulate an expired token
         token: AccessToken = AccessToken()
         token.set_exp(from_time=make_aware(datetime.now() - timedelta(seconds=10)), lifetime=timedelta(seconds=5))
-        
-        response: HttpResponse = self.client.post(self.refresh_url, {"refresh": token})
+        self.client.cookies["refresh_token"] = token
+
+        response: HttpResponse = self.client.post(self.refresh_url)
         self.assertEqual(response.status_code, 401)
