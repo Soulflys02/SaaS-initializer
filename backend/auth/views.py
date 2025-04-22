@@ -26,7 +26,7 @@ class LoginView(APIView):
             value=str(access),
             httponly=SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
             max_age=SIMPLE_JWT['ACCESS_TOKEN_LIFETIME'],
-            samesite='None',
+            samesite=SIMPLE_JWT['AUTH_COOKIE_SAMESITE'],
             secure=SIMPLE_JWT['AUTH_COOKIE_SECURE']
         )
         response.set_cookie(
@@ -34,7 +34,7 @@ class LoginView(APIView):
             value=str(refresh), 
             httponly=SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
             max_age=SIMPLE_JWT['REFRESH_TOKEN_LIFETIME'],
-            samesite='None',
+            samesite=SIMPLE_JWT['AUTH_COOKIE_SAMESITE'],
             secure=SIMPLE_JWT['AUTH_COOKIE_SECURE']
         )
         
@@ -56,7 +56,7 @@ class RefreshTokenView(APIView):
                 value=str(access),
                 httponly=SIMPLE_JWT['AUTH_COOKIE_HTTP_ONLY'],
                 max_age=SIMPLE_JWT['ACCESS_TOKEN_LIFETIME'],
-                samesite='None',
+                samesite=SIMPLE_JWT['AUTH_COOKIE_SAMESITE'],
                 secure=SIMPLE_JWT['AUTH_COOKIE_SECURE']
             )
             return response

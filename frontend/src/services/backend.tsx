@@ -1,21 +1,22 @@
 import axios from "axios";
-import useAuthStore from "../stores/useAuthStore";
 
 const backend = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_URL,
+  withCredentials: true,
 });
 
-backend.interceptors.request.use(
-  (config) => {
-    const accessToken = useAuthStore.getState().accessToken;
-    console.log(accessToken);
-
-    if (accessToken) {
-      config.headers["Authorization"] = `Bearer ${accessToken}`;
+backend.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    if (error.response?.status === 401) {
+      try {
+        await backend.post("auth/refresh/");
+        return backend.request(error.config);
+      } catch (refreshError) {
+        console.error("Refresh token error:", refreshError);
+        return Promise.reject(refreshError);
+      }
     }
-    return config;
-  },
-  (error) => {
     return Promise.reject(error);
   }
 );
