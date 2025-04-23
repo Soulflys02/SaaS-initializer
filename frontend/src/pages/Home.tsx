@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import useAxios from "../hooks/useAxios";
 import Logout from "../components/Logout";
 
