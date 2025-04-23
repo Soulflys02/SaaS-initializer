@@ -1,23 +1,28 @@
+import { useNavigate } from "react-router";
 import useAxios from "../../../hooks/useAxios";
-
-type JWT = {
-  refresh: string;
-  access: string;
-};
+import useUserStore from "../../../stores/useUserStore";
+import { User } from "../../../types/user";
+import { PATHS, API_PATHS } from "../../../PATHS";
 
 function LoginForm() {
-  const { error, loading, fetchData } = useAxios<JWT>();
+  const { error, loading, fetchData } = useAxios();
+  const setUser = useUserStore((state) => state.setUser);
+  const navigate = useNavigate();
 
   async function handleSubmit(formData: FormData) {
-    const tokens = await fetchData({
+    const response = await fetchData({
       method: "POST",
-      url: "auth/login/",
+      url: API_PATHS.LOGIN,
       data: {
         username: formData.get("username"),
         password: formData.get("password"),
       },
     });
-    console.log(tokens);
+    if (response.status === 200) {
+      const user: User = response.data.user;
+      setUser(user);
+      navigate(PATHS.HOME);
+    }
   }
 
   return (

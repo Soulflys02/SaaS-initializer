@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from backend.settings import SIMPLE_JWT
 from django.contrib.auth import authenticate
+from .serializers import UserSerializer
 
 # Create your views here.
 class LoginView(APIView):
@@ -19,8 +20,9 @@ class LoginView(APIView):
         
         refresh = RefreshToken.for_user(user)
         access = refresh.access_token
+        serializer = UserSerializer(user)
 
-        response = Response({"message": "Login successful!"}, status=200)
+        response = Response({"user": serializer.data}, status=200)
         response.set_cookie(
             key='access_token',
             value=str(access),

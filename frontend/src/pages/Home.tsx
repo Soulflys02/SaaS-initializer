@@ -1,17 +1,15 @@
 import { useEffect, useState } from "react";
 import useAxios from "../hooks/useAxios";
+import Logout from "../components/Logout";
 
 function Home() {
-  const { error, loading, fetchData } = useAxios();
-  const [apiData, setApiData] = useState();
+  const { data, error, loading, fetchData } = useAxios();
 
   async function fetchApiData() {
-    const response = await fetchData({
+    await fetchData({
       method: "GET",
       url: "/api/scoped/",
     });
-    console.log(response);
-    setApiData(response);
   }
 
   useEffect(() => {
@@ -25,8 +23,9 @@ function Home() {
       ) : error ? (
         <p style={{ color: "red" }}>Error: {error}</p>
       ) : (
-        <div>API data : {JSON.stringify(apiData)}</div>
+        <div>API data : {JSON.stringify(data)}</div>
       )}
+      <Logout />
     </>
   );
 }

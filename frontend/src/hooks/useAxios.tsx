@@ -1,26 +1,30 @@
 import { useState } from "react";
-import { AxiosRequestConfig } from "axios";
+import { AxiosRequestConfig, AxiosResponse } from "axios";
 import backend from "../services/backend";
 
 function useAxios<T = any>() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [data, setData] = useState<T | null>(null);
 
   const fetchData = async (config: AxiosRequestConfig) => {
     setLoading(true);
-    setError(null);
 
     try {
-      const response = await backend(config);
-      return response.data as T;
+      const response: AxiosResponse<T> = await backend(config);
+      setData(response.data);
+      return response;
     } catch (err: any) {
-      setError(err.message || "An error occurred");
+      const errorMessage =
+        err.response?.data?.message || err.message || "An error occurred";
+      setError(errorMessage);
+      throw new Error(errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
-  return { error, loading, fetchData };
+  return { data, error, loading, fetchData };
 }
 
 export default useAxios;
