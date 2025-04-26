@@ -10,7 +10,10 @@ class RequiredValidator(questionary.Validator):
         return True
     
 def log(message):
-    print(f"[INFO] {message}")
+    questionary.print(f"[INFO] {message}", style="bold fg:yellow")
+
+def success(message):
+    questionary.print(f"[SUCCESS] {message}", style="bold fg:green")
 
 def edit_file(file_path, new_content="", start_line=None, end_line=None, line_content=False):
     with open(file_path, 'r') as file:
