@@ -4,6 +4,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from backend.settings import SIMPLE_JWT
 from django.contrib.auth import authenticate
 from .serializers import UserSerializer
+from django.utils.timezone import now
 
 # Create your views here.
 class LoginView(APIView):
@@ -17,6 +18,9 @@ class LoginView(APIView):
             return Response({"error": "Invalid credentials"}, status=401)
         if not user.is_active:
             return Response({"error": "User is inactive"}, status=401)
+        
+        user.last_login = now()
+        user.save(update_fields=['last_login'])
         
         refresh = RefreshToken.for_user(user)
         access = refresh.access_token
