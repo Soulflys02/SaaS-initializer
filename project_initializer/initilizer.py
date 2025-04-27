@@ -107,7 +107,7 @@ def add_features(project_name: str, selected_features: list[str]):
                     shutil.move(f"{SRC_FRONTEND_DIR}/pages/Login.tsx", f"{DST_FRONTEND_DIR}/pages/Login.tsx")
                     shutil.move(f"{SRC_FRONTEND_DIR}/stores/useUserStore.tsx", f"{DST_FRONTEND_DIR}/stores/useUserStore.tsx")
                     shutil.move(f"{SRC_FRONTEND_DIR}/types/User.tsx", f"{DST_FRONTEND_DIR}/types/User.tsx")
-                    shutil.move("template_repo/frontend/App.tsx", f"{project_name}/frontend/App.tsx")
+                    shutil.move(f"{SRC_FRONTEND_DIR}/App.tsx", f"{DST_FRONTEND_DIR}/App.tsx")
                     success("Authentication feature added successfully.")
                 case "API":
                     log("Adding API feature...")

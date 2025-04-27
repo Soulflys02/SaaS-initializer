@@ -1,4 +1,5 @@
 import axios from "axios";
+import { API_PATHS } from "../PATHS";
 
 const backend = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_URL,
@@ -10,7 +11,7 @@ backend.interceptors.response.use(
   async (error) => {
     if (error.response?.status === 401) {
       try {
-        await backend.post("auth/refresh/");
+        await backend.post(API_PATHS.REFRESH);
         return backend.request(error.config);
       } catch (refreshError) {
         console.error("Refresh token error:", refreshError);
