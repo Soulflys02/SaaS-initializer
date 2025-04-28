@@ -3,7 +3,7 @@ from git import Repo
 import os
 import shutil
 import subprocess
-from project_initializer.utils import log, RequiredValidator, edit_line_containing, success, error
+from initializer_pkg.utils import log, RequiredValidator, edit_line_containing, success, error
 
 def get_packages(selected_features: list[str]) -> str:
     """
