@@ -3,7 +3,7 @@ from git import Repo
 import os
 import shutil
 import subprocess
-from utils import log, edit_file, RequiredValidator, edit_line_containing, success, error
+from project_initializer.utils import log, RequiredValidator, edit_line_containing, success, error
 
 def get_packages(selected_features: list[str]) -> str:
     """
@@ -157,9 +157,7 @@ def add_features(project_name: str, selected_features: list[str]):
                         ["]"],
                         ["    path(\"api/\", include(\"api.urls\")),\n]"]
                     )
-            success(f"{feature} feature added successfully.")
-
-                    
+            success(f"{feature} feature added successfully.")         
 
 def main():
     global FEATURES
@@ -168,20 +166,24 @@ def main():
         "API",
     ]
 
-    answers = questionary.form(
-        project_name = questionary.text("What is the name of your project?", validate=RequiredValidator),
-        features = questionary.checkbox("Select the features you want to include in your project:", choices=FEATURES)
-    ).ask()
-
-    project_name = answers['project_name']
-    selected_features = answers['features']
-
     try:
+        answers = questionary.form(
+            project_name = questionary.text("What is the name of your project?", validate=RequiredValidator),
+            features = questionary.checkbox("Select the features you want to include in your project:", choices=FEATURES),
+            github = questionary.confirm("Do you want to initialize a git repository?", default=False),
+        ).ask()
+        project_name = answers['project_name']
+        selected_features = answers['features']
+       
         log("Cloning the repository...")
         Repo.clone_from("https://github.com/Soulflys02/web-dev-framework.git", "template_repo")
         success("Repository cloned successfully.")
         init_project(project_name, selected_features)
         add_features(project_name, selected_features)
+        shutil.rmtree("template_repo")
+        success("Project setup completed successfully.")
+
+
     except Exception as e:
         error(e)
     
