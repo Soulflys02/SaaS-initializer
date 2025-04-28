@@ -1,12 +1,6 @@
 name: Update Pip Package
 
 on:
-  workflow_dispatch:
-  push:
-    branches: ["*"]
-    paths:
-      - "project_initializer/project_initializer/**"
-
   pull_request:
     branches: ["master"]
     paths:
