@@ -3,7 +3,7 @@ from git import Repo
 import os
 import shutil
 import subprocess
-from utils import log, edit_file, RequiredValidator, remove_line_containing, success
+from project_initializer.utils import log, RequiredValidator, edit_line_containing, success, error
 
 def get_packages(selected_features: list[str]) -> str:
     """
@@ -53,6 +53,35 @@ def init_project(project_name: str, selected_features: list[str]):
     )
     shutil.move("template_repo/backend/utils", f"{project_name}/backend/utils")
     shutil.move("template_repo/backend/.gitignore", f"{project_name}/backend/.gitignore")
+    os.remove(f"{project_name}/backend/{project_name}/settings.py")
+    os.mkdir(f"{project_name}/backend/{project_name}/settings")
+    shutil.move("template_repo/backend/backend/settings/__init__.py", f"{project_name}/backend/{project_name}/settings/__init__.py")
+    shutil.move("template_repo/backend/backend/settings/base.py", f"{project_name}/backend/{project_name}/settings/base.py")
+    with open(f"{project_name}/backend/.env", "w") as file:
+       pass
+    with open(f"{project_name}/backend/{project_name}/settings/settings.py", "w") as file:
+        file.write("from .base import *\n")
+    edit_line_containing(
+        f"{project_name}/backend/{project_name}/asgi.py",
+        [f"os.environ.setdefault(\"DJANGO_SETTINGS_MODULE\", \"{project_name}.settings\")"],
+        [f"os.environ.setdefault(\"DJANGO_SETTINGS_MODULE\", \"{project_name}.settings.settings\")\n"]
+    )
+    edit_line_containing(
+        f"{project_name}/backend/{project_name}/wsgi.py",
+        [f"os.environ.setdefault(\"DJANGO_SETTINGS_MODULE\", \"{project_name}.settings\")"],
+        [f"os.environ.setdefault(\"DJANGO_SETTINGS_MODULE\", \"{project_name}.settings.settings\")\n"]
+    )
+    edit_line_containing(
+        f"{project_name}/backend/manage.py",
+        [f"os.environ.setdefault(\"DJANGO_SETTINGS_MODULE\", \"{project_name}.settings\")"],
+        [f"    os.environ.setdefault(\"DJANGO_SETTINGS_MODULE\", \"{project_name}.settings.settings\")\n"]
+    )
+    edit_line_containing(
+        f"{project_name}/backend/{project_name}/urls.py",
+        ["from django.urls import path"],
+        ["from django.urls import path, include\n"]
+    )
+   
     # React project initialization
     os.makedirs(f"{project_name}/frontend")
     subprocess.run(f"\
@@ -93,12 +122,21 @@ def add_features(project_name: str, selected_features: list[str]):
     DST_FRONTEND_DIR = f"{project_name}/frontend/src"
 
     for feature in FEATURES:
+        # Adding files based on selected features
         if feature in selected_features:
+            log(f"Adding {feature} feature...")
             match feature:
                 case "Authentication":
-                    log("Adding authentication feature...")
                     # Backend
                     shutil.move(f"{SRC_BACKEND_DIR}/auth", f"{DST_BACKEND_DIR}/auth")
+                    shutil.move(f"{SRC_BACKEND_DIR}/backend/settings/auth.py", f"{DST_BACKEND_DIR}/{project_name}/settings/auth.py")
+                    with open(f"{DST_BACKEND_DIR}/{project_name}/settings/settings.py", "a") as file:
+                        file.write("from .auth import *\n")
+                    edit_line_containing(
+                        f"{project_name}/backend/{project_name}/urls.py",
+                        ["]"],
+                        ["    path(\"auth/\", include(\"auth.urls\")),\n]"]
+                    )
                     # Frontend
                     shutil.move(f"{SRC_FRONTEND_DIR}/components/Logout.tsx", f"{DST_FRONTEND_DIR}/components/Logout.tsx")
                     shutil.move(f"{SRC_FRONTEND_DIR}/components/ProtectedRoute.tsx", f"{DST_FRONTEND_DIR}/components/ProtectedRoute.tsx")
@@ -108,13 +146,18 @@ def add_features(project_name: str, selected_features: list[str]):
                     shutil.move(f"{SRC_FRONTEND_DIR}/stores/useUserStore.tsx", f"{DST_FRONTEND_DIR}/stores/useUserStore.tsx")
                     shutil.move(f"{SRC_FRONTEND_DIR}/types/User.tsx", f"{DST_FRONTEND_DIR}/types/User.tsx")
                     shutil.move(f"{SRC_FRONTEND_DIR}/App.tsx", f"{DST_FRONTEND_DIR}/App.tsx")
-                    success("Authentication feature added successfully.")
                 case "API":
-                    log("Adding API feature...")
                     # Backend
-                    shutil.move(os.path.join(SRC_BACKEND_DIR, "api"), os.path.join(DST_BACKEND_DIR, "api"))
-                    success("API feature added successfully.")
-                    
+                    shutil.move(f"{SRC_BACKEND_DIR}/api", f"{DST_BACKEND_DIR}/api")
+                    shutil.move(f"{SRC_BACKEND_DIR}/backend/settings/api.py", f"{DST_BACKEND_DIR}/{project_name}/settings/api.py")
+                    with open(f"{DST_BACKEND_DIR}/{project_name}/settings/settings.py", "a") as file:
+                        file.write("from .api import *\n")
+                    edit_line_containing(
+                        f"{project_name}/backend/{project_name}/urls.py",
+                        ["]"],
+                        ["    path(\"api/\", include(\"api.urls\")),\n]"]
+                    )
+            success(f"{feature} feature added successfully.")         
 
 def main():
     global FEATURES
@@ -123,19 +166,26 @@ def main():
         "API",
     ]
 
-    answers = questionary.form(
-        project_name = questionary.text("What is the name of your project?", validate=RequiredValidator),
-        features = questionary.checkbox("Select the features you want to include in your project:", choices=FEATURES)
-    ).ask()
+    try:
+        answers = questionary.form(
+            project_name = questionary.text("What is the name of your project?", validate=RequiredValidator),
+            features = questionary.checkbox("Select the features you want to include in your project:", choices=FEATURES),
+            github = questionary.confirm("Do you want to initialize a git repository?", default=False),
+        ).ask()
+        project_name = answers['project_name']
+        selected_features = answers['features']
+       
+        log("Cloning the repository...")
+        Repo.clone_from("https://github.com/Soulflys02/web-dev-framework.git", "template_repo")
+        success("Repository cloned successfully.")
+        init_project(project_name, selected_features)
+        add_features(project_name, selected_features)
+        shutil.rmtree("template_repo")
+        success("Project setup completed successfully.")
 
-    project_name = answers['project_name']
-    selected_features = answers['features']
 
-    log("Cloning the repository...")
-    Repo.clone_from("https://github.com/Soulflys02/web-dev-framework.git", "template_repo")
-    success("Repository cloned successfully.")
-    init_project(project_name, selected_features)
-    add_features(project_name, selected_features)
+    except Exception as e:
+        error(e)
     
 if __name__ == "__main__":
     main()
