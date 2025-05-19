@@ -9,7 +9,8 @@ const backend = axios.create({
 backend.interceptors.response.use(
   (response) => response,
   async (error) => {
-    if (error.response?.status === 401) {
+    if (error.response?.status === 401 && !error.config._retry) {
+      error.config._retry = true;
       try {
         await backend.post(API_PATHS.REFRESH);
         return backend.request(error.config);
