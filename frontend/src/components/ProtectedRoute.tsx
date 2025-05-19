@@ -1,15 +1,14 @@
-import { Navigate } from "react-router";
+import { Navigate, Outlet } from "react-router";
 import useUserStore from "../stores/useUserStore";
-import { JSX } from "react";
 import { PATHS } from "../PATHS";
 
-function ProtectedRoute({ children }: { children: JSX.Element }) {
+function ProtectedRoute() {
   const isAuthenticated = useUserStore((state) => state.isAuthenticated);
 
   if (!isAuthenticated) {
-    return <Navigate to={PATHS.LOGIN} replace />;
+    return <Navigate to={PATHS.AUTH} replace />;
   }
-  return children;
+  return <Outlet />;
 }
 
 export default ProtectedRoute;

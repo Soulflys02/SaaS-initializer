@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: ["master"]
     paths:
-      - "project_initializer/project_initializer/**"
+      - "project_initializer/**"
 
 jobs:
   build-and-publish:
