@@ -1,5 +1,5 @@
 export namespace PATHS {
-  export const LOGIN = "/login";
+  export const AUTH = "/auth";
   export const HOME = "/";
 }
 
