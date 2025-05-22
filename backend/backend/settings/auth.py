@@ -3,13 +3,18 @@ from .base import INSTALLED_APPS
 
 INSTALLED_APPS += [
     'rest_framework_simplejwt',
+    'authentification',
 ]
+
+AUTH_USER_MODEL = "authentification.User"
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'auth.models.CookieJWTAuthentication',
+        'authentification.models.CookieJWTAuthentication',
     ],
 }
+
+AUTHENTICATION_BACKENDS = ['authentification.backends.EmailBackend']
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
