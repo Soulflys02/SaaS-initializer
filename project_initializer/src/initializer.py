@@ -124,14 +124,14 @@ def add_features(selected_features: list[str]):
             match feature:
                 case "Authentication":
                     # Backend
-                    shutil.move(f"{SRC_BACKEND_DIR}/auth", f"{DST_BACKEND_DIR}/auth")
+                    shutil.move(f"{SRC_BACKEND_DIR}/authentification", f"{DST_BACKEND_DIR}/authentification")
                     shutil.move(f"{SRC_BACKEND_DIR}/backend/settings/auth.py", f"{DST_BACKEND_DIR}/backend/settings/auth.py")
                     with open(f"{DST_BACKEND_DIR}/backend/settings/settings.py", "a") as file:
                         file.write("from .auth import *\n")
                     edit_line_containing(
                         f"{DST_BACKEND_DIR}/backend/urls.py",
                         ["]"],
-                        ["    path(\"auth/\", include(\"auth.urls\")),\n]"]
+                        ["    path(\"auth/\", include(\"authentification.urls\")),\n]"]
                     )
                     # Frontend
                     shutil.move(f"{SRC_FRONTEND_DIR_SRC}/components/Logout.tsx", f"{DST_FRONTEND_DIR_SRC}/components/Logout.tsx")
