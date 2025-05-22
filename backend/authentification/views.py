@@ -10,10 +10,10 @@ from django.utils.timezone import now
 class LoginView(APIView):
     def post(self, request):
         # Handle login logic here
-        username: str = request.data.get('username')
+        email: str = request.data.get('email')
         password: str = request.data.get('password')
 
-        user = authenticate(username=username, password=password)
+        user = authenticate(username=email, password=password)
         if user is None:
             return Response({"error": "Invalid credentials"}, status=401)
         if not user.is_active:
