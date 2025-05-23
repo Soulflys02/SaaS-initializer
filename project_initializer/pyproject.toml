@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "SaaS-initializer"
-version = "1.1.1"
+version = "1.1.2"
 description = "A SaaS initializer for web development using Django and React"
 readme = "README.md"
 license = "MIT"
