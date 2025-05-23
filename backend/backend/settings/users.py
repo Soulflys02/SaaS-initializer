@@ -1,24 +1,24 @@
-from datetime import timedelta
-from .base import INSTALLED_APPS, MIDDLEWARE
+from .base import INSTALLED_APPS, MIDDLEWARE, FRONTEND_URL
 
 INSTALLED_APPS += [
-    'authentification',
+    'users',
     'allauth.account',
     'allauth.headless',
 ]
-
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
-
 MIDDLEWARE += [
     "allauth.account.middleware.AccountMiddleware",
 ]
-
-AUTH_USER_MODEL = "authentification.User"
+AUTH_USER_MODEL = "users.User"
 HEADLESS_ONLY = True
+HEADLESS_FRONTEND_URL = {
+    "account_confirm_email": f"{FRONTEND_URL}/verify-email/{{key}}",
+}
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
 ACCOUNT_LOGIN_METHODS = {'email'}
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 SESSION_COOKIE_AGE = 60 * 60 * 24

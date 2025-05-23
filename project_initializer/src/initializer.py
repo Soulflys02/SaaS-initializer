@@ -25,7 +25,7 @@ def get_packages(selected_features: list[str]) -> str:
     # Adding packages based on selected features
     for feature in selected_features:
         match feature:
-            case "Authentication":
+            case "Users":
                 python_packages.append("django-allauth[socialaccount]")
                 react_packages.append("zustand")
             
@@ -122,21 +122,21 @@ def add_features(selected_features: list[str]):
         if feature in selected_features:
             log(f"Adding {feature} feature...")
             match feature:
-                case "Authentication":
+                case "Users":
                     # Backend
-                    shutil.move(f"{SRC_BACKEND_DIR}/authentification", f"{DST_BACKEND_DIR}/authentification")
-                    shutil.move(f"{SRC_BACKEND_DIR}/backend/settings/auth.py", f"{DST_BACKEND_DIR}/backend/settings/auth.py")
+                    shutil.move(f"{SRC_BACKEND_DIR}/users", f"{DST_BACKEND_DIR}/users")
+                    shutil.move(f"{SRC_BACKEND_DIR}/backend/settings/users.py", f"{DST_BACKEND_DIR}/backend/settings/users.py")
                     with open(f"{DST_BACKEND_DIR}/backend/settings/settings.py", "a") as file:
-                        file.write("from .auth import *\n")
+                        file.write("from .users import *\n")
                     edit_line_containing(
                         f"{DST_BACKEND_DIR}/backend/urls.py",
                         ["]"],
-                        ["    path(\"auth/\", include(\"authentification.urls\")),\n]"]
+                        ["    path(\"users/\", include(\"users.urls\")),\n]"]
                     )
                     # Frontend
                     shutil.move(f"{SRC_FRONTEND_DIR_SRC}/components/Logout.tsx", f"{DST_FRONTEND_DIR_SRC}/components/Logout.tsx")
                     shutil.move(f"{SRC_FRONTEND_DIR_SRC}/components/ProtectedRoute.tsx", f"{DST_FRONTEND_DIR_SRC}/components/ProtectedRoute.tsx")
-                    shutil.move(f"{SRC_FRONTEND_DIR_SRC}/features/auth", f"{DST_FRONTEND_DIR_SRC}/features/auth")
+                    shutil.move(f"{SRC_FRONTEND_DIR_SRC}/features/users", f"{DST_FRONTEND_DIR_SRC}/features/users")
                     shutil.move(f"{SRC_FRONTEND_DIR_SRC}/pages/Home.tsx", f"{DST_FRONTEND_DIR_SRC}/pages/Home.tsx")
                     shutil.move(f"{SRC_FRONTEND_DIR_SRC}/pages/Login.tsx", f"{DST_FRONTEND_DIR_SRC}/pages/Login.tsx")
                     shutil.move(f"{SRC_FRONTEND_DIR_SRC}/stores/useUserStore.tsx", f"{DST_FRONTEND_DIR_SRC}/stores/useUserStore.tsx")
@@ -158,7 +158,7 @@ def add_features(selected_features: list[str]):
 def main():
     global FEATURES, SRC_BACKEND_DIR, DST_BACKEND_DIR, SRC_FRONTEND_DIR_SRC, DST_FRONTEND_DIR_SRC, SRC_FRONTEND_DIR, DST_FRONTEND_DIR
     FEATURES = [
-        "Authentication", 
+        "Users", 
         "API",
     ]
 

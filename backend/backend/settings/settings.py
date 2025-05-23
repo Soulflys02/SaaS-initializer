@@ -11,5 +11,5 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from .base import *
-from .auth import *
+from .users import *
 from .api import *

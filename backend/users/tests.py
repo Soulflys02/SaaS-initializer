@@ -1,5 +1,5 @@
 from django.test import TestCase
-from authentification.models import User
+from users.models import User
 from django.test import Client
 from django.urls import reverse
 from django.http import HttpResponse
