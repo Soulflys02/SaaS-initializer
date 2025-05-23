@@ -12,7 +12,7 @@ class AuthTests(TestCase):
     user: User
     client: Client = Client()
     
-    login_url: str = "/auth/browser/v1/auth/login"
+    login_url: str = "/users/browser/v1/auth/login"
     protected_url: str = reverse("hello_protected")
     scoped_url: str = reverse("hello_scoped")
 
