@@ -1,15 +1,23 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import useAxios from "../hooks/useAxios";
 import Logout from "../components/Logout";
+import { API_PATHS } from "../PATHS";
 
 function Home() {
-  const { data, error, loading, fetchData } = useAxios();
+  const { loading, backendApiCall } = useAxios();
+  const [data, setData] = useState(null);
+  const [error, setError] = useState(null);
 
   async function fetchApiData() {
-    await fetchData({
+    const response = await backendApiCall({
       method: "GET",
-      url: "/api/scoped/",
+      url: API_PATHS.SCOPED,
     });
+    if (response.status === 200) {
+      setData(response.data);
+    } else {
+      setError(response.data.error);
+    }
   }
 
   useEffect(() => {

@@ -1,21 +1,29 @@
 import useUserStore from "../stores/useUserStore";
 import useAxios from "../hooks/useAxios";
 import { API_PATHS } from "../PATHS";
+import { useState } from "react";
 
 function Logout() {
   const clearUser = useUserStore((state) => state.clearUser);
-  const { fetchData, error, loading } = useAxios();
+  const [error, setError] = useState<string>();
+  const { backendApiCall, loading } = useAxios();
 
   return (
     <>
       <button
         onClick={async () => {
-          const response = await fetchData({
-            method: "POST",
-            url: API_PATHS.LOGOUT,
-          });
-          if (response.status === 200) {
+          try {
+            await backendApiCall({
+              method: "DELETE",
+              url: API_PATHS.LOGOUT,
+            });
             clearUser();
+          } catch (err: any) {
+            if (err.response && err.response.status === 401) {
+              clearUser();
+            } else {
+              setError(err.message || "Erreur lors du logout");
+            }
           }
         }}
       >
