@@ -26,7 +26,7 @@ def get_packages(selected_features: list[str]) -> str:
     for feature in selected_features:
         match feature:
             case "Authentication":
-                python_packages.append("djangorestframework_simplejwt")
+                python_packages.append("django-allauth[socialaccount]")
                 react_packages.append("zustand")
             
     return " ".join(python_packages), " ".join(react_packages)
