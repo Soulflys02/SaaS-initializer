@@ -1,26 +1,24 @@
 from datetime import timedelta
-from .base import INSTALLED_APPS
+from .base import INSTALLED_APPS, MIDDLEWARE
 
 INSTALLED_APPS += [
-    'rest_framework_simplejwt',
     'authentification',
+    'allauth.account',
+    'allauth.headless',
+]
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+MIDDLEWARE += [
+    "allauth.account.middleware.AccountMiddleware",
 ]
 
 AUTH_USER_MODEL = "authentification.User"
-
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'authentification.models.CookieJWTAuthentication',
-    ],
-}
-
-AUTHENTICATION_BACKENDS = ['authentification.backends.EmailBackend']
-
-SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
-    "UPDATE_LAST_LOGIN": True,
-    "AUTH_COOKIE_HTTP_ONLY": True,
-    "AUTH_COOKIE_SECURE": False,
-    "AUTH_COOKIE_SAMESITE": "Lax",
-}
+HEADLESS_ONLY = True
+ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
+ACCOUNT_LOGIN_METHODS = {'email'}
+SESSION_COOKIE_AGE = 60 * 60 * 24
