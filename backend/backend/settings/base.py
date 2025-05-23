@@ -14,18 +14,16 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "django-insecure-0ct*37k9=5-1ncl5h#z6(wyvnx-)n2ctz7xj^#*)!#0b82w-c("
-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+FRONTEND_URL = "http://localhost:5173"
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -52,8 +50,13 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
+    FRONTEND_URL,
 ]
+
+CSRF_TRUSTED_ORIGINS = [
+    FRONTEND_URL,
+]
+
 CORS_ALLOW_CREDENTIALS = True
 
 ROOT_URLCONF = "backend.urls"
