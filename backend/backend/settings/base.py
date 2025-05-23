@@ -10,12 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 from pathlib import Path
-from utils import get_env_var
-from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
-load_dotenv(BASE_DIR / ".env")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -24,7 +21,7 @@ load_dotenv(BASE_DIR / ".env")
 SECRET_KEY = "django-insecure-0ct*37k9=5-1ncl5h#z6(wyvnx-)n2ctz7xj^#*)!#0b82w-c("
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-FRONTEND_URL = get_env_var("FRONTEND_URL")
+FRONTEND_URL = "http://localhost:5173"
 
 ALLOWED_HOSTS = []
 
