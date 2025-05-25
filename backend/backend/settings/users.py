@@ -14,11 +14,13 @@ MIDDLEWARE += [
 ]
 AUTH_USER_MODEL = "users.User"
 HEADLESS_ONLY = True
-HEADLESS_FRONTEND_URL = {
-    "account_confirm_email": f"{FRONTEND_URL}/verify-email/{{key}}",
+HEADLESS_FRONTEND_URLS = {
+    "account_confirm_email": f"{FRONTEND_URL}/confirm-email/{{key}}",
 }
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
-ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'password*']
 ACCOUNT_LOGIN_METHODS = {'email'}
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 SESSION_COOKIE_AGE = 60 * 60 * 24
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True

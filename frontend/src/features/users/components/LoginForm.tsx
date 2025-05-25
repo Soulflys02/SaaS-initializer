@@ -3,39 +3,37 @@ import useAxios from "../../../hooks/useAxios";
 import useUserStore from "../../../stores/useUserStore";
 import { User } from "../../../types/user";
 import { PATHS, API_PATHS } from "../../../PATHS";
-import { useState } from "react";
 
 function LoginForm() {
-  const { loading, backendApiCall } = useAxios();
-  const [error, setError] = useState<string>();
+  const { loading, backendApiCall, error } = useAxios();
   const setUser = useUserStore((state) => state.setUser);
   const navigate = useNavigate();
 
   async function handleSubmit(formData: FormData) {
     // Obtain token
-    const response = await backendApiCall({
-      method: "POST",
-      url: API_PATHS.LOGIN,
-      data: {
-        email: formData.get("email"),
-        password: formData.get("password"),
-      },
-    });
-    if (response.status === 200) {
-      // Retrieve user data
-      const userResponse = await backendApiCall({
-        method: "GET",
-        url: API_PATHS.USER,
+    try {
+      await backendApiCall({
+        method: "POST",
+        url: API_PATHS.LOGIN,
+        data: {
+          email: formData.get("email"),
+          password: formData.get("password"),
+        },
       });
-      if (userResponse.status === 200) {
+      try {
+        // Retrieve user data
+        const userResponse = await backendApiCall({
+          method: "GET",
+          url: API_PATHS.USER,
+        });
         // Set user in store
         setUser(userResponse.data.user as User);
         navigate(PATHS.HOME, { replace: true });
-      } else {
-        setError(userResponse.data.error);
+      } catch (error) {
+        console.error("Error retrieving user data:", error);
       }
-    } else {
-      setError(response.data.error);
+    } catch (err) {
+      console.error("Login failed:", err);
     }
   }
 
@@ -49,7 +47,9 @@ function LoginForm() {
       {loading ? (
         <p>Loading...</p>
       ) : (
-        <div>{error && <p style={{ color: "red" }}>Error: {error}</p>}</div>
+        <div>
+          {error && <p style={{ color: "red" }}>Error: {error.message}</p>}
+        </div>
       )}
     </>
   );

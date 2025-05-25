@@ -1,20 +1,30 @@
 import { useState } from "react";
-import { AxiosRequestConfig, AxiosResponse } from "axios";
+import { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 import backend from "../services/backend";
 
-function useAxios() {
-  const [loading, setLoading] = useState(false);
+function useAxios<T = any>() {
+  const [loading, setLoading] = useState<boolean>(false);
+  const [data, setData] = useState<T | null>(null);
+  const [error, setError] = useState<AxiosError | null>(null);
 
   async function backendApiCall(
     config: AxiosRequestConfig
-  ): Promise<AxiosResponse<any, any>> {
+  ): Promise<AxiosResponse<T>> {
     setLoading(true);
-    const response: AxiosResponse<any, any> = await backend(config);
-    setLoading(false);
-    return response;
+    setError(null);
+    try {
+      const response: AxiosResponse<T> = await backend(config);
+      setData(response.data);
+      return response;
+    } catch (err: any) {
+      setError(err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
   }
 
-  return { backendApiCall, loading };
+  return { backendApiCall, loading, data, error, setData };
 }
 
 export default useAxios;
