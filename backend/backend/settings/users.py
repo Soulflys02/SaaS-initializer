@@ -18,7 +18,7 @@ HEADLESS_FRONTEND_URLS = {
     "account_confirm_email": f"{FRONTEND_URL}/confirm-email/{{key}}",
 }
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
-ACCOUNT_SIGNUP_FIELDS = ['email*', 'password*']
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
 ACCOUNT_LOGIN_METHODS = {'email'}
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 SESSION_COOKIE_AGE = 60 * 60 * 24

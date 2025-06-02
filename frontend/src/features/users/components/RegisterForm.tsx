@@ -1,23 +1,10 @@
-import useAxios from "../../../hooks/useAxios";
-import { API_PATHS } from "../../../PATHS";
+import useUser from "../../../hooks/useUser";
 
 function RegisterForm() {
-  const { loading, backendApiCall, error } = useAxios();
+  const { loading, error, register } = useUser();
 
   async function handleSubmit(formData: FormData) {
-    // Obtain token
-    try {
-      await backendApiCall({
-        method: "POST",
-        url: API_PATHS.REGISTER,
-        data: {
-          email: formData.get("email"),
-          password: formData.get("password"),
-        },
-      });
-    } catch (err) {
-      console.error("Register failed:", err);
-    }
+    register(formData.get("email"), formData.get("password"));
   }
 
   return (
