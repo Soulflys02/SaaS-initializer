@@ -45,7 +45,7 @@ class EmailConfirmationTests(TestCase):
 
         email = mail.outbox[-1]
         match = re.search(r'/confirm-email/([^/\s]+)', email.body)
-        assert match, "Clé de confirmation non trouvée dans l'email"
+        assert match, "Confirmation key not found in email body"
         key = match.group(1)
         key = urllib.parse.unquote(key)
 
