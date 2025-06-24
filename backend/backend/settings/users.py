@@ -16,8 +16,8 @@ AUTH_USER_MODEL = "users.User"
 HEADLESS_ONLY = True
 HEADLESS_FRONTEND_URLS = {
     "account_confirm_email": f"{FRONTEND_URL}/confirm-email/{{key}}",
-    "account_signup" : f"{FRONTEND_URL}/signup",
-    "account_reset_password": f"{FRONTEND_URL}/reset-password",
+    "account_signup": f"{FRONTEND_URL}/signup",
+    "account_reset_password_from_key": f"{FRONTEND_URL}/reset-password/{{key}}",
 }
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
