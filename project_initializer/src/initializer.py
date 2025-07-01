@@ -138,9 +138,12 @@ def add_features(selected_features: list[str]):
                     shutil.move(f"{SRC_FRONTEND_DIR_SRC}/components/ProtectedRoute.tsx", f"{DST_FRONTEND_DIR_SRC}/components/ProtectedRoute.tsx")
                     shutil.move(f"{SRC_FRONTEND_DIR_SRC}/features/users", f"{DST_FRONTEND_DIR_SRC}/features/users")
                     shutil.move(f"{SRC_FRONTEND_DIR_SRC}/pages/Home.tsx", f"{DST_FRONTEND_DIR_SRC}/pages/Home.tsx")
-                    shutil.move(f"{SRC_FRONTEND_DIR_SRC}/pages/Login.tsx", f"{DST_FRONTEND_DIR_SRC}/pages/Login.tsx")
+                    shutil.move(f"{SRC_FRONTEND_DIR_SRC}/pages/Auth.tsx", f"{DST_FRONTEND_DIR_SRC}/pages/Auth.tsx")
+                    shutil.move(f"{SRC_FRONTEND_DIR_SRC}/pages/ConfirmEmail.tsx", f"{DST_FRONTEND_DIR_SRC}/pages/ConfirmEmail.tsx")
+                    shutil.move(f"{SRC_FRONTEND_DIR_SRC}/pages/ResetPassword.tsx", f"{DST_FRONTEND_DIR_SRC}/pages/ResetPassword.tsx")
                     shutil.move(f"{SRC_FRONTEND_DIR_SRC}/stores/useUserStore.tsx", f"{DST_FRONTEND_DIR_SRC}/stores/useUserStore.tsx")
                     shutil.move(f"{SRC_FRONTEND_DIR_SRC}/types/User.tsx", f"{DST_FRONTEND_DIR_SRC}/types/User.tsx")
+                    shutil.move(f"{SRC_FRONTEND_DIR_SRC}/hooks/useUser.tsx", f"{DST_FRONTEND_DIR_SRC}/hooks/useUser.tsx")
                     shutil.move(f"{SRC_FRONTEND_DIR_SRC}/App.tsx", f"{DST_FRONTEND_DIR_SRC}/App.tsx")
                 case "API":
                     # Backend
