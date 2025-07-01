@@ -17,8 +17,6 @@ markdown-it-py==3.0.0
 mdurl==0.1.2
 more-itertools==10.7.0
 nh3==0.2.21
-packaging==25.0
--e git+ssh://git@github.com/Soulflys02/web-dev-framework.git@0c7452bbe67faec91ee70f036606b339c3d7abb1#egg=project_initializer&subdirectory=project_initializer
 prompt_toolkit==3.0.51
 Pygments==2.19.1
 pyinstaller==6.13.0
