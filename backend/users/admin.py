@@ -1,5 +1,5 @@
 from django.contrib import admin
-from authentification.models import User
+from users.models import User
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 class UserAdmin(BaseUserAdmin):
@@ -9,8 +9,9 @@ class UserAdmin(BaseUserAdmin):
     fieldsets = (
         (None, {'fields': ('email', 'first_name', 'last_name', 'password')}),
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
-        ('Dates', {'fields': ('last_login',)}),
+        ('Dates', {'fields': ('last_login', 'date_joined')}),
     )
+    readonly_fields = ('date_joined', 'last_login')
     add_fieldsets = (
         (None, {
             'classes': ('wide',),

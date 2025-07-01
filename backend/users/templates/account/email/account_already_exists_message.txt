@@ -1,0 +1,6 @@
+Bonjour,
+
+Un compte existe déjà avec cette adresse email sur {{ current_site.name }}.
+Si tu as oublié ton mot de passe, utilise la procédure de réinitialisation.
+
+Merci.

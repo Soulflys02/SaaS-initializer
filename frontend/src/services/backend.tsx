@@ -1,4 +1,5 @@
 import axios from "axios";
+import { API_PATHS } from "../PATHS";
 
 const backend = axios.create({
   baseURL: import.meta.env.VITE_BACKEND_URL,
@@ -26,7 +27,7 @@ backend.interceptors.request.use(async (config) => {
   const method = config.method?.toUpperCase();
   if (["POST", "PUT", "DELETE", "PATCH"].includes(method || "")) {
     if (!csrfPromise) {
-      csrfPromise = backend.get("/auth/csrf/").finally(() => {
+      csrfPromise = backend.get(API_PATHS.CSRF).finally(() => {
         csrfPromise = null;
       });
     }
